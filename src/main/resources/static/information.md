@@ -81,3 +81,72 @@ Spring Data JPA가 인터페이스의 구현체를 자동으로 생성해준다.
  * `Spring Data JPA` : `BlogRepository` 인터페이스의 구현체를 자동으로 생성하여, 서비스 레이어가 데이터 접근 로직을 간단하게 처리할 수 있도록 도와준다. 
 
 ---
+
+## Test 코드에서 사용되는 코드
+### `Mock`과 `Mockmvc` 
+1. `mock` : `Mock객체`는 실제 객체의 동작을 모방하기 위해 사용되는 객체이다. (물건을 판매하기 전에 가제품으로 미리 보는 것과 같음) 주로 단위 테스트에서 사용되며, 실제 객체가 없거나 테스트하기 어려울 때 사용한다. `Mock` 객체는 메모리 상에만 존재하고 외부 시스템(DB, 네트워크 등)과의 상호작용을 시뮬레이션한다.
+   * 사용 예시 : 데이터베이스와 상호작용이 포함된 코드를 테스트할 때, 실제 데이터베이스를 사용하지 않고 `Mock` 객체를 사용해 동일한 메서드 호출을 시뮬레이션 할 수 있다. 
+   * `Mock`을 사용해야하는 이유 :
+     * 외부 시스템과의 의존성을 제거해서 테스트의 독립성을 보장한다.
+     * 테스트를 더 빠르게 수행할 수 있다.
+     * 다양한 시나리오(예외처리, 특정 조건)를 쉽게 테스트할 수 있다.
+   * 라이브러리 : `Mockito` Java의 Mock 라이브러리로 객체의 동작을 시뮬레이션하고 테스트할 수 있도록 지원한다. 
+2. `MockMvc` : Spring MVC의 웹 계층을 테스트하기 위해 사용되는 클래스이다. 실제 서버를 구동하지 않고도 HTTP 요청을 시뮬레이션하고, 컨트롤러의 동작을 테스트할 수 있다. 
+   * 주요기능 :
+     * HTTP 요청을 작성하고 테스트할 수 있도록 한다.
+     * Spring MVC의 전체 웹 계층을 테스트할 수 있다.
+     * 컨트롤러 메서드의 결과를 검증할 수 있다. 
+     * 예시코드
+     ```
+        mockMvc.perform(get("/api/articles")
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.title").value("title));
+     ```
+     `/api/articles` 엔드포인트에 대해 GET 요청을 시뮬레이션하고, 응답 상태 코드가 200 OK인지, 응답 JSON에서 `title` 필드가 "title"인지 확인한다.
+   * Mockmvc 사용 이유:
+     * 실제 서버를 띄우지 않고도 컨트롤러의 동작을 테스트할 수 있다.
+     * 테스트를 간결하고 빠르게 수행할 수 있다.
+     * 웹 계층의 전체 동작을 검증할 수 있다. 
+3. `protected`와 `private` 선언의 이유 
+    ```
+   class BlogApiControllerTest {
+
+    @Autowired
+    protected MockMvc mockMvc;
+
+    @Autowired
+    protected ObjectMapper objectMapper; // 직렬화, 역직렬화를 위한 클래스
+
+    @Autowired
+    private WebApplicationContext context;
+   }
+    ```
+* 위 코드에서 `protected` 선언된 `mockMvc`와 `objectMapper`
+    * `protected` : 같은 클래스, 같은 패키지, 해당 클래스를 상속받은 자식 클래스에서 접근할 수 있다. 
+    * 테스트 클래스에서는 `protected`를 사용하여 확장 가능한 테스트 구조를 만들 수 있다. 이 테스트 클래스를 상속받아 추가 테스트를 작성할 수 있고, 이런 경우 자식 클래스에서도 `mockMvc`와 `objectMapper`를 사용할 수 있다.
+    * `mockMvc`와 `objectMapper`는 테스트에 자주 사용되는 객체들로 이를 상속된 클래스에서도 재사용할 수 있도록 `protected`로 선언한다. 
+* `private`로 선언된 `WebApplicationContext` :
+  * `private` : 선언된 클래스 내에서만 접근할 수 있다. 외부 클래스나 자식 클래스에서도 접근이 불가능하다. 
+  * `WebApplicastionContext`는 Spring 애플리케이션의 모든 빈(Bean)을 관리하는 역할을 하며, 보통 내부적으로만 필요하기 때문에 `private` 접근 제한자를 사용한다.
+* `WebApplicationContext` 역할 
+  * Spring MVC에서 애플리케이션 컨텍스트를 확장하는 인터페이스이다. 웹 애플리케이션과 관련한 빈(Bean)을 고나리하며, Spring MVC의 설정과 생명주기를 관리한다.
+    * Spring 애플리케이션 전체 설정을 포함하며, 각종 빈(Bean) 관리
+    * MVC 설정 정보(Controller, View 등)를 포함한다.
+    * 웹 애플리케이션이 구동될 때 초기화한다.
+  * `MockMvc` 설정을 위해 `WebApplicationContext`를 사용하여 Spring 애플리케이션의 컨텍스트를 가져와 테스트 환경을 구성한다.
+
+### `ResultActions`
+`mockMvc.perform()` 메서드의 결과를 담는 객체이다. 테스트 결과에 대한 여러 가지 검증을 체이닝 방식으로 추가할 수 있도록 한다. 
+* `mockMvc.perform()` : `MockMvc` 는 Spring MVC 애플리케이션의 컨트롤러 테스트를 사용할 때 사용하는 도구이다. `perform()` 메서드를 사용하여 HTTP 요청을 시뮬레이션한다.
+    ```
+    final ResultActions resultActions = mockMvc.perform(get(url, savedArticle.getId()));
+    ```
+  위 코드에서 `get(url, savedArticle.getId())` 의 `get`은 HTTP의 GET 요청을 의미한다. `url` 부분은 테스트 코드 초반부에 선언한 `private String url` 부분에서 정의한 주소이며, `savedArticle.getId()` 를 통하여 `url`의 `{id}` 부분에 저장된 글의 ID를 채워넣는다. 
+
+### `jsonPath()`
+`jsonPath` : JSON 응답에서 특정 경로의 값을 추출하는 데 사용된다. 
+    ```
+    jsonPath("$.content").value("content) 
+    ```
+    위 코드에서 `$.content`은 JSON 루트에서 `content` 필드를 말한다. `value(content)` 부분은 응답 JSON에서 추출된 `content` 필드의 값이 `content` 변수와 동일한지 검증을 한다.  

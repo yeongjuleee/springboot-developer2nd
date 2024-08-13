@@ -12,10 +12,7 @@ import me.leeyeongju.bespringbootdeveloper.dto.ArticleResponse;
 import me.leeyeongju.bespringbootdeveloper.service.BlogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -49,6 +46,15 @@ public class BlogApiController {
         return ResponseEntity.ok()
                 .body(articles);
     }
+
+    // 글 하나만 조회하는 findArticle() 메서드
+    @GetMapping("/api/articles/{id}") // URL 경로에서 값을 추출한다. {id}에 해당하는 값이 id로 들어온다.
+    public ResponseEntity<ArticleResponse> findArticle(@PathVariable long id ) { // URL에서 {id} 값이 id로 들어온다.
+        Article article = blogService.findById(id);
+
+        return ResponseEntity.ok()
+                .body(new ArticleResponse(article));
+    }
     
     /*
     @RestController : HTTP 응답으로 객체 데이터를 JSON 형식으로 반환
@@ -71,6 +77,11 @@ public class BlogApiController {
 
         ~ .map(ArticleResponse::new) : Stream<Article>을 Stream<ArticleResponse>로 변환한다. Article 객체를 ArticleResponse 객체로 변환하기 위해 ArticleResponse 생성자를 사용한다. AticleResponse::new : ArticleResponse 클래스의 생성자를 참조하여 Article 객체를 ArticleResponse 객체로 변환한다.
         ~ .toList() : 변환된 Stream<ArticleResponse> 객체를 다시 List<ArticleResponse>로 변환한다.
+
+    findArticle() 메서드 :
+        @PathVariable : URL에서 값을 가져오는 어노테이션이다.
+        /api/articles/3 GET 요청을 받으면 id에 3 값이 들어오고, 이 값은 blogService의 findById() 메서드로 넘어가 3번 블로그 글을 찾는다.
+        블로그 글을 찾으면 3번 글의 정보를 body에 담아 웹 브라우저로 전송한다.
 
      */
 }

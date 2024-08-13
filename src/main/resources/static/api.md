@@ -47,6 +47,23 @@
   
   } 
   ```
-  3. controller 패키지의 BlogApiController 파일을 열어 전체 글을 조회한 뒤 반환하는 findAllArticles() 메서드 추가 
-  4. 아아
+  3. controller 패키지의 BlogApiController 파일을 열어 전체 글을 조회한 뒤 반환하는 findAllArticles() 메서드 추가
+---
+## 블로그 글 조회 API 구현하기 
+블로그 글 하나를 조회하는 API이다. 
+
+* 1단계 : 서비스 메서드 코드 작성하기 
+  1. BlogService 파일을 열어 블로그 글 하나를 조회하는 메서드 `findById()` 메서드 추가
+  ```
+  public Article findById(long id) {
+    return blogRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+  }
+  ```
+* 2단계 : 컨트롤러 메서드 코드 작성하기 
+  1. `/api/articles/{id}` GET 요청이 오면 블로그 글을 조회하기 위해 매핑할 `findArticle()` 메서드 작성
+  ```
+  
+  ```
+  2. 
 
