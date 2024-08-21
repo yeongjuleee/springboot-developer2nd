@@ -55,7 +55,16 @@ public class BlogApiController {
         return ResponseEntity.ok()
                 .body(new ArticleResponse(article));
     }
-    
+
+    // 글을 삭제하기 위한 findArticles() 메서드
+    @DeleteMapping("/api/articles/{id}") // /api/articles/{id} DELETE 요청이 오면 {id}에 해당하는 값이 @PathVariable 어노테이션을 통해 들어옴
+    public ResponseEntity<Void> deleteArticle(@PathVariable long id) {
+        blogService.delete(id);
+
+        return ResponseEntity.ok()
+                .build();
+    }
+
     /*
     @RestController : HTTP 응답으로 객체 데이터를 JSON 형식으로 반환
     @PostMapping() : HTTP 메서드가 POST일 때 요청받은 URL과 동일한 메서드 매핑(BlogApiController의 경우 /api/articles는 addArticle() 메서드에 매핑을 함.

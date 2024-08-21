@@ -63,7 +63,37 @@
 * 2단계 : 컨트롤러 메서드 코드 작성하기 
   1. `/api/articles/{id}` GET 요청이 오면 블로그 글을 조회하기 위해 매핑할 `findArticle()` 메서드 작성
   ```
-  
-  ```
-  2. 
+      @GetMapping("/api/articles/{id}") // URL 경로에서 값을 추출한다. {id}에 해당하는 값이 id로 들어온다.
+    public ResponseEntity<ArticleResponse> findArticle(@PathVariable long id ) { // URL에서 {id} 값이 id로 들어온다.
+        Article article = blogService.findById(id);
 
+        return ResponseEntity.ok()
+                .body(new ArticleResponse(article));
+    }
+  ```
+  2. 테스트 코드 작성 : Given : 블로그 글 저장 / When : 저장한 블로그 글의 id 값으로 API 호출 / Then : 응답 코드 200 OK이고, 반환받은 content 와 title이 저장된 값과 같은지 확인 과정 
+---
+## 블로그 글 삭제 API 구현하기
+ID에 해당하는 블로그 글을 삭제하는 API 
+* 1단계 : 서비스 메서드 코드 작성하기
+  1. BlogService 파일을 열어 JPA에서 제공하는 `deleteById()`를 이용하여 데이터베이스에서 데이터를 삭제하는 `delete()` 메서드 추가 
+  ```
+  ```
+* 2단계 : 컨트롤러 메서드 코드 작성하기 
+  1. `/api/articles/{id}` 의 `DELETE` 요청이 오면 글을 삭제하기 위한 `findArticles()` 메서드 작성 
+  ```
+  @DeleteMapping("/api/articles/{id}") 
+  public ResponseEntity<Void> deleteArticle(@PathVariable long id) {
+        blogService.delete(id);
+        return ResponseEntity.ok()
+                .build();
+  }
+  ```
+  2. 실행 테스트 하기 : `PostMan` 을 실행하고, `DELETE`로 HTTP 메서드를 설정, URL에 http://localhost:8080/api/articles/1 입력
+     * 만약 `status: 405` 가 나온다면, 서버를 재 실행 후 `resources/schema.sql` 를 실행하고 `data.sql`을 실행한다.
+     * `PostMan` 에서 `GET` 으로 HTTP 메서드를 설정하고, URL에 http://localhost:8080/api/aritcles 를 입력하고 send 해서 데이터가 있는지 확인을 한다. 
+     * 데이터가 존재하면 다시 `DELETE`로 HTTP 설정 후 제거 확인
+
+* 3단계 : 테스트 코드 작성 
+---
+## 블로그 글 수정 API 구현하기

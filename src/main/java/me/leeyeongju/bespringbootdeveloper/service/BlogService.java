@@ -30,6 +30,11 @@ public class BlogService {
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
     }
 
+    // 글 삭제하는 메서드
+    public void delete(long id) {
+        blogRepository.deleteById(id);
+    }
+
     /*
     @RequiredArgsConstructor : 빈을 생성자로 생성하는 롬복에서 지원하는 어노테이션. final 키워드나 @NotNull 이 붙은 필드로 생성자를 만들어 준다.
     @Service : 클래스를 빈으로 서블릿 컨테이너에 등록해준다.
