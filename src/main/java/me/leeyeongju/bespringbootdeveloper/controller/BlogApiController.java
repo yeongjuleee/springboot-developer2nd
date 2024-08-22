@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import me.leeyeongju.bespringbootdeveloper.domain.Article;
 import me.leeyeongju.bespringbootdeveloper.dto.AddArticleRequest;
 import me.leeyeongju.bespringbootdeveloper.dto.ArticleResponse;
+import me.leeyeongju.bespringbootdeveloper.dto.UpdateArticleRequest;
 import me.leeyeongju.bespringbootdeveloper.service.BlogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +66,15 @@ public class BlogApiController {
                 .build();
     }
 
+    // 글 수정을 위한 updateArticle() 메서드
+    @PutMapping("/api/articles/{id}")
+    public ResponseEntity<Article> updateArticle(@PathVariable long id, @RequestBody UpdateArticleRequest request) {
+        Article updateArticle = blogService.update(id, request);
+
+        return ResponseEntity.ok()
+                .body(updateArticle);
+    }
+
     /*
     @RestController : HTTP 응답으로 객체 데이터를 JSON 형식으로 반환
     @PostMapping() : HTTP 메서드가 POST일 때 요청받은 URL과 동일한 메서드 매핑(BlogApiController의 경우 /api/articles는 addArticle() 메서드에 매핑을 함.
@@ -91,6 +101,10 @@ public class BlogApiController {
         @PathVariable : URL에서 값을 가져오는 어노테이션이다.
         /api/articles/3 GET 요청을 받으면 id에 3 값이 들어오고, 이 값은 blogService의 findById() 메서드로 넘어가 3번 블로그 글을 찾는다.
         블로그 글을 찾으면 3번 글의 정보를 body에 담아 웹 브라우저로 전송한다.
+
+    updateArticle() 메서드 :
+        /api/articles/{id} 에 PUT 요청이 오면 Request Body 정보가 request로 넘어온다. 그리고 다시 서비스 클래스의 update() 메서드에 id와 request를 넘겨준다. 응답 값은 body에 담아 전송한다.
+        @RequestBody : 요청 본문(body)에 담긴 JSON 데이터를 UpdateArticleRequest 객체로 변환하여 request 변수에 저장.
 
      */
 }

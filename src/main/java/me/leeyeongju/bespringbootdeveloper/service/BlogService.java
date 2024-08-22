@@ -3,8 +3,10 @@ package me.leeyeongju.bespringbootdeveloper.service;
 import lombok.RequiredArgsConstructor;
 import me.leeyeongju.bespringbootdeveloper.domain.Article;
 import me.leeyeongju.bespringbootdeveloper.dto.AddArticleRequest;
+import me.leeyeongju.bespringbootdeveloper.dto.UpdateArticleRequest;
 import me.leeyeongju.bespringbootdeveloper.repository.BlogRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,17 +32,31 @@ public class BlogService {
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
     }
 
-    // 글 삭제하는 메서드
+    // 글 삭제하는 delete() 메서드
     public void delete(long id) {
         blogRepository.deleteById(id);
+    }
+
+    // 글 수정하는 update() 메서드
+    @Transactional
+    public Article update(long id, UpdateArticleRequest request) {
+        Article article = blogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+
+        article.update(request.getTitle(), request.getContent());
+
+        return article;
     }
 
     /*
     @RequiredArgsConstructor : 빈을 생성자로 생성하는 롬복에서 지원하는 어노테이션. final 키워드나 @NotNull 이 붙은 필드로 생성자를 만들어 준다.
     @Service : 클래스를 빈으로 서블릿 컨테이너에 등록해준다.
+    @Transaction : 매칭한 메서드를 하나의 트랜잭션으로 묶는 역할을 한다. update() 메서드는 엔티티의 필드 값이 바뀌면 중간에 에러가 발생해도 제대로 된 수정을 보장한다.
 
     save() : JpaRepository에서 지원하는 저장 메서드 save()로 AddArticleRequest 클래스에 저장된 값들을 article 데이터 베이스에 저장한다.
     findAll() : Jpa 지원 메서드 findAll()을 호출해 article 테이블에 저장되어 있는 모든 데이터를 조회한다.
     findById() : JPA에서 제공하는 findById() 메서드를 사용하여 ID를 받아 엔티티를 조회하고 없으면 IllegalArgumentException 예외를 발생한다.
+
+
      */
 }

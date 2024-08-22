@@ -97,3 +97,52 @@ ID에 해당하는 블로그 글을 삭제하는 API
 * 3단계 : 테스트 코드 작성 
 ---
 ## 블로그 글 수정 API 구현하기
+특정 아이디의 글을 수정하는 API 
+* 1단계 : `Article` 파일을 열어 수정하는 메서드 작성 
+  1. 엔티티에 요청받은 내용으로 값을 수정하는 `update()` 메서드 작성 
+  ```
+  public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+  }
+  ```
+* 2단계 : 블로그 글 수정 요청을 받을 DTO 작성 
+  1. dto 패키지의 `UpdateArticleRequest` 생성
+  ```
+  @NoArgsConstructor @AllArgsConstructor
+  @Getter
+  public class UpdateArticleRequest {
+
+    private String title;
+    private String content;
+  }
+  ```
+* 3단계 : 서비스 메서드 코드 작성하기 
+  1. `BlogService` 에 글을 수정하는 `update()` 메서드 추가 
+  ```
+  @Transactional
+  public Article update(long id, UpdateArticleRequest request) {
+      Article article = blogRepository.findById(id)
+              .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+      article.update(request.getTitle(), request.getContent());
+  
+      return article;
+  }
+  ```
+* 4단계 : 컨트롤러 메서드 코드 작성하기 
+  1. `/api/articles/{id}` PUT 요청이 오면 글을 수정하기 위한 `updateArticle()` 메서드 작성
+  ```
+  @PutMapping("/api/articles/{id}")
+  public ResponseEntity<Article> updateArticle(@PathVariable long id, @RequestBody UpdateArticleRequest request) {
+    Article updateArticle = blogService.update(id, request);
+  
+      return ResponseEntity.ok()
+              .body(updateArticle);
+    }
+  ```
+* 5단계 : 실행하기
+  1. 포스트맨에서 HTTP 메서드를 `PUT` 으로 설정, URL은 http://localhost:8080/api/articles/1 입력 
+  2. 수정 내용을 입력하기 위해 `Body` 탭 클릭, `row` 클릭, `JSON`으로 설정 
+  3. "title" : ..., "content" : ... 부분을 수정하고 `send` 로 값 전송
+  4. HTTP 메서드를 `Get` 으로 설정, URL은 http://localhost:8080/api/aritlcles 입력 => 바뀐 값 확인하기 
+* 6단계 : 테스트 코드 작성하기 
