@@ -149,4 +149,44 @@ Spring Data JPA가 인터페이스의 구현체를 자동으로 생성해준다.
     ```
     jsonPath("$.content").value("content) 
     ```
-    위 코드에서 `$.content`은 JSON 루트에서 `content` 필드를 말한다. `value(content)` 부분은 응답 JSON에서 추출된 `content` 필드의 값이 `content` 변수와 동일한지 검증을 한다.  
+    위 코드에서 `$.content`은 JSON 루트에서 `content` 필드를 말한다. `value(content)` 부분은 응답 JSON에서 추출된 `content` 필드의 값이 `content` 변수와 동일한지 검증을 한다. 
+
+### `BlogServiceTest`와 `BlogApiControllerTest`의 차이 
+1. `BlogService` : 애플리케이션의 핵심 비즈니스 로직을 처리하는 `서비스 레이어`이다. 
+2. `BlogService`의 주요 역할: 
+   * 비즈니스 로직 처리 : 클라이언트의 요청을 처리하고, 데이터를 가공하거나 검증 등의 작업을 한다.
+   * 데이터베이스와 상호작용 : `Repository`와 상호작용하여 데이터를 저장, 조회, 수정, 삭제(CRUD)한다.
+   * 컨트롤러와 연결 : 컨트롤러가 사용자로부터 받은 요청을 서비스 레이어에 전달하여 실제 작업을 수행한다. 
+3. `BlogServiceTest` 작성 이유 :
+   * 서비스 로직 검증 : `BlogService`에 구현된 비즈니스 로직이 예상대로 작동되는지 확인하기 위해 작성한다. 
+   * 안정성 보장 : 서비스 레이어가 제대로 동작하는지 확인하여, 추후 코드 수정이나 기능 추가 시 기존 로직이 영향을 받지 않도록 한다.
+   * 문제 조기 발견 : 코드에 문제가 있을 경우, 조기에 발견하여 수정할 수 있다. 
+4. `BlogApiController` : 주로 HTTP 요청을 모의(Mock)하여 컨트롤러의 동작을 테스트한다.
+5. `BlogServiceTest` : 서비스 레이어의 비즈니스 로직이 예상대로 동작하는지 검증한다. 
+
+### `BlogServiceTest`에서 `MockMvc`와 `@AutoConfigureMockMvc`를 사용하지 않는 이유 
+1. 테스트 계층 차이:
+    * `BlogApiControllerTest` : 컨트롤러 계층을 테스트 하는 것으로 HTTP 요청을 모의하여 컨트롤러가 올바르게 동작하는지 검증하기 떄문에 `MockMvc`가 사용된다.  
+    * `BlogServiceTest` : 서비스 계층을 테스트하는 것으로 서비스 계층은 HTTP 요청이나 웹 관련 기능을 다루지 않고, 비즈니스 로직과 데이터베이스 작업을 수행한다. 때문에 `MockMvc`는 필요없고 직접 `BlogService` 메서드를 호출하여 동작을 검증한다.
+2. `MockMvc` 와 `@AutoConfigureMockMvc` : 
+   * `MockMvc` : HTTP 요청을 모의(Mock)하여 컨트롤러를 테스트하기 위한 도구이다.
+   * `@AutoConfigureMockMvc` : 스프링 테스트 컨텍스트에서 `MockMvc`를 자동으로 구성하는 어노테이션이다. 
+   * 서비스 테스트느(`BlogServiceTest`)는 HTTP 레벨의 테스트가 아니라 로직 레벨의 테스트이므로 해당 도구들을 사용하지 않는다. 
+### `isPresent()` 
+`isPresnet()` : Java의 `Optional` 클래스에서 제공하는 메서드이다.
+  * `Optional`은 값이 존재할 수도 있고, 존재하지 않을수도 있는 상황을 안전하게 처리하기 위해 도입된 클래스이다. 
+  * `isPresnet()`는 `Optional` 객체가 값을 가지고 있으면 `true`를 반환, 값을 없으면 `false`를 반환한다. 
+
+### `BlogServiceTest` 에서 사용된 메서드에 `public void`가 아니라 `void`가 사용된 이유 
+`JUnit 5`에서는 테스트 메서드를 `public`으로 선언할 필요가 없다. `JUnit 4`까지는 테스트 메서드를 `public`으로 선언해야 했으나, `JUnit 5`에서는 접근 제한자에 대한 제약이 사라졌다. 
+따라서 테스트 메서드는 기본 접근 제한자인 `package-private(접근 제한자를 명시하지 않은 상태)`를 사용할 수 있으며, 이것으로 `public void` 대신 단순히 `void`를 사용한다. 
+---
+### `assertThrows` 
+테스트 시 예외 발생 여부를 명시적으로 테스트하기 위해 사용한다. 
+* `BlogServieTest`에서 `findArticle()` 메서드에 `throws Exception`을 추가할 수 있으나, 해당 메서드에서 발생할 수 있는 예외는 런타임 예외`IllegalArgumentException`같은 예외만 가능하다. 
+* 런타임 예외는 일반적으로 명시적으로 처리하지 않거나, 테스트 시 `assertThrows`와 같은 방식으로 처리한다. 
+
+### `BlogServiceTest`에서 `findArticle()` 메서드에 바로 예외설정을 해놓고도 따로 `findArticleNotFound()` 테스트 메서드를 만드는 이유 
+`BlogServiceTest`의 경우 `BlogApiControllerTest`와 달리 `MockMvc`와 같은 HTTP 요청을 모방하는 과정이 아닌 직접적으로 서비스 로직을 테스트하기 때문에 특정 예외가 발생하는지 확인하는 테스트를 작성하려면 `assertThrows`와 같은 메서드를 사용해야 한다. 
+하지만, 테스트의 명확성을 위해서는 보통 시나리오를 개별 테스트 메서드로 분리하기 때문에 예외 테스트 코드도 작성하는 것이다.
+  
