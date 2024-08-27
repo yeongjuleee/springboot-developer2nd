@@ -146,3 +146,49 @@ ID에 해당하는 블로그 글을 삭제하는 API
   3. "title" : ..., "content" : ... 부분을 수정하고 `send` 로 값 전송
   4. HTTP 메서드를 `Get` 으로 설정, URL은 http://localhost:8080/api/aritlcles 입력 => 바뀐 값 확인하기 
 * 6단계 : 테스트 코드 작성하기 
+---
+## 블로그 글 목록 뷰 구현하기 
+1. 컨트롤러 메서드 작성하기
+   * 컨트롤러 메서드 작성하기 : 뷰에게 데이터를 전달하기 위한 객체 생성 
+   ```
+    @Getter
+    public class ArticleListViewResponse {
+    // View에 데이터를 전달하기 위한 객체
+
+    private final Long id;
+    private final String title;
+    private final String content;
+   
+    public ArticleListViewResponse(Article article) {
+      this.id = article.getId();
+      this.title = article.getTitle();
+      this.content = article.getContent();
+    }
+    }
+   ```
+   * `/articles` GET 요청을 처리할 코드 작성하기 
+   ```
+    @RequiredArgsConstructor 
+    @Controller
+    public class BlogViewController {
+
+    private final BlogService blogService;
+
+    @GetMapping("/articles")
+    public String getArticles(Model model) {
+            List<ArticleListViewResponse> articles = blogService.findAll().stream()
+                .map(ArticleListViewResponse::new)
+                .toList();
+
+        model.addAttribute("articles", articles); // 1. 블로그 글 리스트 저장
+
+        return "articleList"; // 2. articleList.html 뷰 조회 
+    }
+    }
+   ```
+2. `HTML` 뷰 만들고 테스트하기 : 모델에 전달한 블로그 글 리스트 개수만큼 반복해 글 정보를 보여주는 코드 작성
+   * 아무내용
+   ```
+   ```
+   * 아무내용
+3. 아무내용 
