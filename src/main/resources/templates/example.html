@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>THYMELEAF 익히기</title>
+</head>
+<body>
+    <h1>타임리프 익히기</h1>
+    <!-- LocalDate를 yyyy-MM-dd 포맷으로 변경하기, th:text 사용, ${#temporals.format(텍스트이름, '변경할형식')} -->
+    <p th:text="${#temporals.format(today, 'yyyy-MM-dd')}"></p>
+
+    <div th:object="${person}"> <!-- person을 선택한 객체로 지정하기, th:object -->
+        <p th:text="|이름 : *{name}|"></p>
+        <p th:text="|나이 : *{age}|"></p>
+        <p>취미</p>
+        <ul th:each="hobby : *{hobbies}"><!-- hobbies 개수만큼 반복하기, th:each 사용 -->
+            <li th:text="${hobby}"></li>
+            <!-- 반복 대상이 운동이라면 '대표 취미' 라는 표시 추가, th:if 사용 -->
+            <span th:if="${hobby == '운동'}">(대표 취미)</span>
+        </ul>
+    </div>
+
+    <!-- 1번 블로그 글을 보러 이동, th:href 사용 -->
+    <a th:href="@{/api/articles/{id}(id=${person.id})}">글 보기</a>
+    <!--  @{url} 인데, id 의 값을 가져와야함 -> id 형식 지정하기 위한 (id=${person.id}) 표시 -->
+</body>
+</html>
