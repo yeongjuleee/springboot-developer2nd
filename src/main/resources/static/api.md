@@ -329,3 +329,26 @@ ID에 해당하는 블로그 글을 삭제하는 API
    * 실행하기
 
 ---
+## 블로그 글 뷰 삭제 기능 
+1. `src/main/resources/static` 폴더에 `js` 폴더 생성 후 `article.js`파일 생성 : 삭제 코드 작성
+    ```javascript
+    // 삭제 기능
+    const deleteButton = document.getElementById('delete-btn');
+
+    if (deleteButton) {
+        deleteButton.addEventListener('click', () => {
+            let id = document.getElementById('article-id').value;
+            fetch(`/api/articles/${id}`, {
+                method: 'DELETE'
+        })
+            .then( () => {
+                alert('삭제가 완료되었습니다.');
+                location.replace('/articles');
+            });
+        });
+    }
+    ```
+2. 삭제 버튼을 눌렀을 때 삭제하도록 `삭제`버튼의 엘리먼트에 `delete-btn`이라는 아이디 값을 추가하고 `article.js`가 화면에서 동작하도록 임포트 한다.
+3. 실행 테스트 하기 
+---
+## 글 수정, 생성 기능 추가하기
