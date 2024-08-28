@@ -189,4 +189,6 @@ Spring Data JPA가 인터페이스의 구현체를 자동으로 생성해준다.
 ### `BlogServiceTest`에서 `findArticle()` 메서드에 바로 예외설정을 해놓고도 따로 `findArticleNotFound()` 테스트 메서드를 만드는 이유 
 `BlogServiceTest`의 경우 `BlogApiControllerTest`와 달리 `MockMvc`와 같은 HTTP 요청을 모방하는 과정이 아닌 직접적으로 서비스 로직을 테스트하기 때문에 특정 예외가 발생하는지 확인하는 테스트를 작성하려면 `assertThrows`와 같은 메서드를 사용해야 한다. 
 하지만, 테스트의 명확성을 위해서는 보통 시나리오를 개별 테스트 메서드로 분리하기 때문에 예외 테스트 코드도 작성하는 것이다.
-  
+---
+### `@EnableJpaAuditing` 
+스프링 데이터 JPA의 Auditing 기능을 활성화 하는 것으로 엔티티가 생성되거나 수정될 때 자동으로 시간 정보(생성 시간, 수정 시간)이나 사용자 정보(생성한 사람, 수정한 사람)를 기록할 수 있게 한다.
