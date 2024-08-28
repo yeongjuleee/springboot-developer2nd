@@ -189,6 +189,38 @@ ID에 해당하는 블로그 글을 삭제하는 API
 2. `HTML` 뷰 만들고 테스트하기 : 모델에 전달한 블로그 글 리스트 개수만큼 반복해 글 정보를 보여주는 코드 작성
    * 아무내용
    ```
+   <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org" lang="ko">
+    <head>
+      <meta charset="UTF-8">
+      <title>블로그 글 목록</title>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    
+    </head>
+    <body>
+      <div class="p-5 mb-5 text-center</> bg-light">
+        <h1 class="mb-3">My Blog</h1>
+        <h4 class="mb-3">블로그에 오신 것을 환영합니다.</h4>
+      </div>
+    
+      <div class="container">
+        <div class="row-6" th:each="item : ${articles}"> <!-- 1. article 개수만큼 반복 -->
+          <div class="card">
+            <div class="card-header" th:text="${item.id}">
+            </div>
+            <div class="card-body">
+              <h5 class="card-title" th:text="${item.title}"></h5>
+              <p class="card-text" th:text="${item.content}"></p>
+              <a href="#" class="btn btn-primary">보러 가기</a>
+            </div>
+          </div>
+          <br>
+        </div>
+      </div>
+    </body>
+    </html>
    ```
    * 아무내용
 3. 아무내용 
+
+---
