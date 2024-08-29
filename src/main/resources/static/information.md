@@ -200,3 +200,14 @@ Spring Data JPA가 인터페이스의 구현체를 자동으로 생성해준다.
   * 역할 : 서버로부터 데이터를 가져오거나(`HTTP` GET 요청) 서버에 데이터를 전송하는(`HTTP` POST, PUT, DELETE 등 요청) 작업을 수행한다.
   * 비동기 처리 : 비동기 함수로, 요청이 완료될 때까지 페이지가 멈추지 않고 다른 작업을 계속할 수 있게 한다. 
   * Promise 기반 : `Promise` 객체를 반환한다. 이것은 요청이 성공하거나 실패할 때 이것을 처리할 수 있게 한다.
+---
+### `@RequestParam(required = false) Long id` 
+URL의 쿼리 파라미터 `id`를 메서드의 매개 변수 `id`에 바인딩 한다. 
+`required = false`로 설정되어 있어 `id`가 없어도 예외가 발생하지 않는다.
+
+### `URLSearchParams` : `javaScript`
+* `URLSearchParam` : 쿼리 문자열을 파싱하여 개별적인 키-값 쌍으로 접근할 수 있게 해주는 객체이다. 
+* `let params = new URLSearchParams(location.search)` 의 경우 쿼리 문자열을 파싱하여 `params` 객체를 생성한다. 그 후 `params.get('id')`를 통해 `id`값을 추출한다.
+* `location.search` : 현재 페이지의 URL에서 쿼리 문자열을 반환한다. URL이 `https://example.com/new-article?id=5` 라면, `location.search`는 `"?id=5"`를 반환한다.
+
+---
