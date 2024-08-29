@@ -352,3 +352,108 @@ ID에 해당하는 블로그 글을 삭제하는 API
 3. 실행 테스트 하기 
 ---
 ## 글 수정, 생성 기능 추가하기
+1. 수정/생성 뷰 컨트롤러 작성하기
+   * 수정 화면을 보여주기 위한 컨트롤러 메서드 추가 : `BlogViewController`에 `newArticle()` 메서드 만들기
+   ```java
+    @GetMapping("/new-article")
+    public String newArticle(@RequestParam(required = false) Long id, Model model) {
+        // 1. id 키를 가진 쿼리 파라미터의 값을 id 변수에 매핑(id는 없을 수도 있다.)
+
+        if(id == null) {
+            // 2. id 파라미터가 가 없을 경우 : id 생성
+            model.addAttribute("article", new ArticleViewResponse());
+        } else {
+            // 3. id 가 있을 경우 수정
+            Article article = blogService.findById(id);
+            model.addAttribute("article", new ArticleViewResponse(article));
+        }
+
+        return "newArticle"; // 4. newArticle.html 뷰 조회
+    }
+    ```
+2. 수정/생성 뷰 만들기
+    * 컨트롤러 메서드에서 반환하는 `newArticle.html` 구현
+    ```html
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org" lang="ko">
+    <head>
+    <meta charset="UTF-8">
+    <title>블로그 글</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    </head>
+    <body>
+    <div class="p-5 mb-5 text-center</> bg-light">
+    <h1 class="mb-3">My Blog</h1>
+    <h4 class="mb-3">블로그에 오신 것을 환영합니다.</h4>
+    </div>
+
+    <div class="container mt-5">
+    <div class="row">
+      <div class="col-lg-8">
+        <article>
+          <!-- 아이디 정보 저장 -->
+          <input type="hidden" id="article-id" th:value="${article.id}">
+
+          <header class="mb-4">
+            <input type="text" class="form-control" placeholder="제목" id="title" th:value="${article.title}">
+          </header>
+
+          <section class="mb-5">
+            <textarea class="form-control h-25" rows="10" placeholder="내용" id="content" th:text="${article.content}"></textarea>
+          </section>
+
+          <!-- id가 있을 경우 [수정]버튼을, 없을 경우 [등록] 버튼이 보이도록 -->
+          <button th:if="${article.id} != null" type="button" id="modify-btn" class="btn btn-primary btn-sm">수정</button>
+          <button th:if="${article.id} == null" type="button" id="create-btn" class="btn btn-primary btn-sm">등록</button>
+        </article>
+      </div>
+    </div>
+    </div>
+
+    <script src="/js/article.js"></script><!-- 수정, 생성을 위한 기능 API article.js -->
+    </body>
+    </html>
+    ```
+   * 수정, 생성 기능을 위한 API 구현 : `article.js` 에 수정 관련 기능 추가
+    ```javascript
+    // 수정 기능
+    // 1. id가 modify-btn인 엘리먼트 조회
+    const modifyButton = document.getElementById('modify-btn');
+
+    if(modifyButton) {
+    // 2. 클릭 이벤트가 감지되면 수정 API 요청
+    modifyButton.addEventListener('click', () => {
+    let params = new URLSearchParams(location.search);
+    let id = params.get('id');
+
+        fetch(`/api/articles/${id}`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify( {
+                title: document.getElementById('title').value,
+                content: document.getElementById('content').value
+            })
+        })
+            .then( () => {
+                alert('수정이 완료되었습니다.');
+                location.replace(`/articles/${id}`);
+            });
+    });
+    }
+    ```
+   * `aritcle.html`에서 수정 버튼의 내용 수정(1. 기존 내용, 2. 수정된 코드) 
+   ```html
+              <button type="button" class="btn btn-primary btn-sm">수정</button>
+    ```
+    ```html
+          <button type="button" id="modify-btn"
+                  th:onclick="|location.href='@{/new-article?id={articleId}(articleId=${article.id})}'|"
+                  class="btn btn-primary btn-sm">수정</button>
+    ```
+3. 실행 테스트하기 
+---
+## 생성 기능 마무리하기 
+1. 생성 기능 작성하기
+2. 실행 테스트하기
