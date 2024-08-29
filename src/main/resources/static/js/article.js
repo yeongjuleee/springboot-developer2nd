@@ -21,7 +21,6 @@ if (deleteButton) {
 }
 
 // 수정 기능
-
 // 1. id가 modify-btn인 엘리먼트 조회
 const modifyButton = document.getElementById('modify-btn');
 
@@ -29,8 +28,7 @@ if(modifyButton) {
     // 2. 클릭 이벤트가 감지되면 수정 API 요청
     modifyButton.addEventListener('click', event => {
         // 요소가 제대로 조회되는지 확인하기 위한 변수 지정
-        //let titleElement = document.getElementById('title');
-        const titleElement = document.getElementById('title');
+        let titleElement = document.getElementById('title');
         console.log(titleElement)
         console.log(titleElement.value); // 요소가 제대로 조회되는지 확인하기
 
@@ -51,5 +49,28 @@ if(modifyButton) {
                 alert('수정이 완료되었습니다.');
                 location.replace(`/articles/${id}`);
             });
+    });
+}
+
+// 생성(등록) 기능
+// 1. id가 create-btn인 엘리먼트
+const createButton = document.getElementById('create-btn');
+
+if(createButton) {
+    // 2. 클릭 이벤트가 감지되면 생성 API 요청
+    createButton.addEventListener("click", () => {
+        fetch("/api/articles", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify( {
+                title: document.getElementById("title").value,
+                content: document.getElementById("content").value,
+            }),
+        }). then( () => {
+            alert("등록 완료되었습니다.");
+            location.replace("/articles");
+        });
     });
 }

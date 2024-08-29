@@ -456,4 +456,33 @@ ID에 해당하는 블로그 글을 삭제하는 API
 ---
 ## 생성 기능 마무리하기 
 1. 생성 기능 작성하기
+   * `resources/static/js`에서 `article.js`을 열어 등록 버튼을 누르면 입력 칸에 있는 데이터를 가져와 게시글 생성 API에 글 생성 관련 요청을 보내주는 코드 추가
+    ```javascript
+    // 생성(등록) 기능
+    // 1. id가 create-btn인 엘리먼트
+    const createButton = document.getElementById('create-btn');
+    
+    if(createButton) {
+    // 2. 클릭 이벤트가 감지되면 생성 API 요청
+    createButton.addEventListener("click", () => {
+    fetch("/api/articles", {
+    method: "POST",
+    headers: {
+    "Content-Type": "application/json",
+    },
+    body: JSON.stringify( {
+    title: document.getElementById("title").value,
+    content: document.getElementById("content").value,
+    }),
+    }). then( () => {
+    alert("등록 완료되었습니다.");
+    location.replace("/articles");
+    });
+    });
+    }
+    ```
+   * `articleList.html` 파일을 수정하여 id가 `create-btn`인 [생성] 버튼 추가
+    ```html
+    
+    ```
 2. 실행 테스트하기
