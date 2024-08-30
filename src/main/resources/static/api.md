@@ -486,3 +486,22 @@ ID에 해당하는 블로그 글을 삭제하는 API
     
     ```
 2. 실행 테스트하기
+
+--- 
+## 회원 도메인 만들기 
+1. 의존성 추가하기
+    ```
+    // SECURITY
+    implementation 'org.springframework.boot:spring-boot-starter-security' // 스프링 시큐링티를 사용하기 위한 스타터 
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6' // 스프링 시큐리티를 사용하기 위한 의존성 추가
+    testImplementation 'org.springframework.security:spring-security-test' // 스프링 시큐리티를 테스트하기 위한 의존성
+    ```
+2. 엔티티 만들기 
+   * `User` 파일 생성, `UserDetails` 클래스를 상속하는 `User` 클래스 만들기
+    ```java
+
+    ```
+3. 리포지터리 만들기
+
+## 시큐리티 설정하기
+1. 우아아앙 
