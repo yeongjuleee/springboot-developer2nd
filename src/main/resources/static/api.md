@@ -613,4 +613,88 @@ ID에 해당하는 블로그 글을 삭제하는 API
     ```
 ---
 ## 시큐리티 설정하기
-1. 우아아앙 
+1. 실제 인증 처리를 하는 시큐리티 설정 파일 `WebSecurityConfig` 작성 : `config` 패키지 생성, `WebSecurityConfig` 클래스 작성 (최신 스프링 시큐리티에서 `authorizeRequests()`가 `authorizeHttpRequests()`로 대체 되었다. 1. 기존 `authorizeRequests()`, 2. 최신 `authorizeHttpRequests()`)
+    ```java
+    // 1. 기존 `authorizeRequests()`
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .authorizeRequests(auth -> auth // 3. 인증, 인가 설정
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/login"),
+                                new AntPathRequestMatcher("/signup"),
+                                new AntPathRequestMatcher("/user")
+                        ).permitAll()
+                        .anyRequest().authenticated())
+                .formLogin(formLogin -> formLogin // 4. 폼 기반 로그인 설정
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/articles")
+                )
+                .logout(logout -> logout // 5. 로그아웃 설정
+                        .logoutSuccessUrl("/login")
+                        .invalidateHttpSession(true)
+                )
+                .csrf(AbstractHttpConfigurer::disable) // 6. csrf 비활성화
+                .build();
+    }
+    ```
+---
+위의 코드(기존 `authorizeRequests`) 설명 
+2.
+    ```
+   @Bean
+   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception() :
+   `SecurityFilterChain` 빈을 정의하여 `HTTP` 요청에 대한 보안 설정을 구성한다. => 즉 특정 HTTP 요청에 대해 웹 기반 보안을 구성한다.
+    ```
+3.
+    ```
+    return http .authorizeHttpRequests(auth -> auth) :
+   특정 경로에 대한 액세스 설정을 한다.
+   `requestMatchers()` : 특정 요청과 일치하는 url에 대한 액세스를 설정한다.
+   `permitAll()` : 누구나 접근이 가능하게 설정한다. ("/login", "/signup", "/user"로 요청이 오면 인증/인가 없이도 접근할 수 있다.)
+   `anyRequest()` : 위에서 설정한 url 이외 요청에 대해 설정한다.
+   `authenticated()` : 별도의 인가는 필요하지 않지만 인증이 성공된 상태여야 접근할 수 있다.    
+    ```
+4.
+    ```
+   .formLogin(formLogin -> formLogin ... ) :
+   `loginPage()` : 로그인 페이지 경로를 설정한다.
+   `defaultSuccessUrl()` : 로그인이 완료되었을 때 이동할 경로 설정 
+    ```
+5.
+    ```
+   .logout(logout -> logout ...) :
+   `logoutSuccessUrl()` : 로그아웃이 완료되었을 때 이동할 경로 설정
+   `invalidateHttpSession()` : 로그아웃 이후에 세션을 전체 삭제할지 여부 설정
+    ```
+6.
+    ```
+   .csrf(AbstractHttpConfigurer::disable) :
+   CSRF 설정을 비활성화 한다.
+   ```
+---
+   ```java
+   // 2. 최신 스프링 시큐리티 `authorizeHttpRequests()`
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+        .authorizeHttpRequests(auth -> auth // 3. 인증, 인가 설정
+        .requestMatchers("/login", "/signup", "/user").permitAll()
+        .anyRequest().authenticated())
+        .formLogin(formLogin -> formLogin // 4. 폼 기반 로그인 설정
+        .loginPage("/login")
+        .defaultSuccessUrl("/articles", true)
+        )
+        .logout(logout -> logout // 5. 로그아웃 설정
+        .logoutSuccessUrl("/login")
+        .invalidateHttpSession(true)
+        .clearAuthentication(true)
+        )
+        .csrf(csrf -> csrf.disable()) // 6. csrf 비활성화
+        .build();
+        }
+   ```
+---
+위 코드 변경 사항에 대한 설명 적기...
+---
+2. 어쩌고 저쩌고
