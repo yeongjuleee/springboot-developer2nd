@@ -211,3 +211,6 @@ URL의 쿼리 파라미터 `id`를 메서드의 매개 변수 `id`에 바인딩 
 * `location.search` : 현재 페이지의 URL에서 쿼리 문자열을 반환한다. URL이 `https://example.com/new-article?id=5` 라면, `location.search`는 `"?id=5"`를 반환한다.
 
 ---
+### `UserDetails` 
+스프링 시큐리티에서 인증(로그인)된 사용자의 정보를 관리하기 위해 `UserDetails` 인터페이스를 사용한다. 
+`UserDetails` 인터페이스는 사용자 계정의 기본적인 정보를 제공하는 역할을 하며, `UserDetails`를 구현한 객체는 스프링 시큐리티가 인증한 권한 부여 작업을 수행하는 데 필요한 정보를 제공한다. 
