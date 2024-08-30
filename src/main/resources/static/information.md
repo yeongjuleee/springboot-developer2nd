@@ -214,3 +214,37 @@ URL의 쿼리 파라미터 `id`를 메서드의 매개 변수 `id`에 바인딩 
 ### `UserDetails` 
 스프링 시큐리티에서 인증(로그인)된 사용자의 정보를 관리하기 위해 `UserDetails` 인터페이스를 사용한다. 
 `UserDetails` 인터페이스는 사용자 계정의 기본적인 정보를 제공하는 역할을 하며, `UserDetails`를 구현한 객체는 스프링 시큐리티가 인증한 권한 부여 작업을 수행하는 데 필요한 정보를 제공한다. 
+
+### JPA 메서드에 맞게 식별자 관련 부분 : `UserRepository`
+JPA는 메서드 규칙에 맞춰 메서드를 선언하면 이름을 분석해 자동으로 쿼리를 생성한다. 
+
+* 자주 사용하는 쿼리 메서드의 규칙
+  1. `findByName()` : "name" 컬럼의 값 중 파라미터로 들어오는 값과 같은 데이터 반환
+    ```sql
+    ...WHERE name = ?1
+    ```
+  2. `findByNameAndAge()` : 파라미터로 들어오는 값 중 첫 번째 값은 "name" 컬럼에서 조회하고, 두 번째 값은 "age" 컬럼에서 조회한 데이터 반환
+    ```sql
+    ...WHERE name =?1 AND age=?2
+    ```
+  3. `findByNameOrAge()` : 파라미터로 들어오는 값 중 첫 번째 값이 "name" 컬럼에서 조회되거나 두 번째 값이 "age"에서 조회되는 데이터 반환
+    ```sql
+    ...WHERE name=?1 OR age=?2
+    ```
+  4. `findByAgeLessThan()` : "age" 컬럼의 값 중 파라미터로 들어온 값보다 작은 데이터 반환
+    ```sql
+    ...WHERE age <?1
+    ```
+  5. `findByAgeGreaterThan()` : "age" 컬럼의 값 중 파라미터로 들어온 값보다 큰 데이터 반환
+    ```sql
+    ...WHERE age >?1
+    ```
+  6. `findByName(Is)Null()` : "name" 컬럼의 값 중 null인 데이터 반환
+    ```sql
+    ...WHERE name IS NULL
+    ```
+  
+---
+### `Optional<ClassName>` 
+`Optional` 은 값이 없을 수도 있는 상황에서 `null`을 안전하게 처리하기 위한 컨테이너 역할을 한다. 
+이 메서드가 반환하는 값이 존재하지 않으면 `Optional.empty()`가 반환이 된다.
