@@ -591,6 +591,26 @@ ID에 해당하는 블로그 글을 삭제하는 API
     Optional<User> findByEmail(String email); // email로 사용자 정보를 가져온다.
     }
     ```
+## 서비스 메서드 코드 작성하기
+1. 로그인을 진행할 때 사용자 정보를 가져오는 코드 작성
+    ```java
+    import org.springframework.security.core.userdetails.UserDetailsService;
+    import org.springframework.stereotype.Service;
 
+    @RequiredArgsConstructor
+    @Service
+    public class UserDetailService implements UserDetailsService {
+
+        private final UserRepository userRepository;
+
+        // 사용자 이름(email)으로 사용자의 정보를 가져오는 메서드
+        @Override
+        public User loadUserByUsername(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow( () -> new IllegalArgumentException((email)));
+        }
+    }
+    ```
+---
 ## 시큐리티 설정하기
 1. 우아아앙 
