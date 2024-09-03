@@ -248,3 +248,62 @@ JPA는 메서드 규칙에 맞춰 메서드를 선언하면 이름을 분석해 
 ### `Optional<ClassName>` 
 `Optional` 은 값이 없을 수도 있는 상황에서 `null`을 안전하게 처리하기 위한 컨테이너 역할을 한다. 
 이 메서드가 반환하는 값이 존재하지 않으면 `Optional.empty()`가 반환이 된다.
+---
+### `WebSecurityConfig` 에서 `filterChain` 메서드의 `Lamda`표현식에 관하여
+```java
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .authorizeHttpRequests(auth -> auth // 3. 인증, 인가 설정
+                        .requestMatchers("/login", "/signup", "/user").permitAll()
+                        .anyRequest().authenticated())
+                .formLogin(formLogin -> formLogin // 4. 폼 기반 로그인 설정
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/articles", true)
+                )
+                .logout(logout -> logout // 5. 로그아웃 설정
+                        .logoutSuccessUrl("/login")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                )
+                .csrf(csrf -> csrf.disable()) // 6. csrf 비활성화
+                .build();
+    }
+```
+1. `.formLogin`과 `.logout`의 빨간 밑줄이 생긴 것에 대하여 
+    * 빨간 밑줄 : `.formLogin` 또는 `.logout`처럼 메서드 이름만 입력했을 경우 빨간 밑줄이 나오는 이유는 메서드들의 매개변수를 받아야만 완전한 메서드 호출로 인정하기 때문이다. 매개변수를 넣지 않으면, 이 메서드들은 호출되지 않은 상태로 남아 있기 때문에 에러로 인식한다.
+2. 람다 표현식의 의미와 문법
+    * 람다 표현식은 Java8 부터 도입된 문법으로, 메서드를 간결하게 표현할 수 있는 방법이다. 
+    *  람다 표현식의 기본 형태는 아래와 같다.
+    ```java
+    (parameters) -> (expression)
+    ```
+   이 문법은 인터페이스의 메서드를 구현하는 익명 클래스의 축약형이라고 이해하면 좋다.
+3. `.formLogin(변수명 -> 변수명)`의 의미
+   * `.formLogin(formLogin -> formLogin)` 이라는 코드는 실제로 다음과 같은 의미를 가지고 있다.
+    ```java
+    .formLogin(formLogin -> formLogin.loginPage("/lgoin").defaultSuccessUrl("/articles", true))
+    ```
+   여기서 `formLogin`은 매개변수 이름으로, 개발자가 원하는 이름으로 지정할 수 있다. `formLogin`이란 매개변수는 `FormLoginConfigurer` 객체를 가리키는 것으로, 람다 표현식 안에서 `formLogin` 변수를 통해 `FormLoginConfigurer` 객체의 메서드들을 호출할 수 있다.
+    같은 원리로 `.logout(logout -> logout)` 또한 `LogoutConfigurer` 객체의 설정을 위한 람다 표현식이다.
+---
+### `WebSecurityConfig` 클래스에서 사용된 `authenticationManager` 메서드에 대하여
+```
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailService userDetailService) throws Exception {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userService); // 1. 사용자 정보 서비스 설정
+        authProvider.setPasswordEncoder(bCryptPasswordEncoder);
+
+        return new ProviderManager(authProvider);
+    }
+```
+1. 역할 : 스프링 시큐리티의 `AuthenticationManager`를 구성하는 것으로 이 매니저는 인증 절차를 처리하며, 주어진 사용자 정보를 검증하는 책임을 갖는다.
+2. 구성요소 
+   * `DaoAuthenticationProvider` : 데이터베이스에서 사용자 정보를 조회하고, 패스워드를 검증하는 데 사용
+   * `UserDetailService` : 사용자 정보를 로드하는 서비스로 이 서비스를 통해 사용자 정보가 `DaoAuthenticationProvider`에 제공된다.
+   * `BCryptPasswordEncoder` : 패스워드 인코딩을 위한 인코더로 사용자 패스워드를 해시하고 비교할 때 사용된다. 
+3. 코드 리뷰
+    * `DaoAuthenticationProvider` 설정 : `userDetailService`를 설정하여 사용자 정보를 제공하고, `BCryptPasswordEncoder`를 설정하여 패스워드 검증을 처리한다.
+    * `ProviderManager` 반환 : `DaoAuthenticationProvider`를 통해 인증 과정을 처리하는 `ProviderManager`를 반환한다. 이 매니저는 여러 인증 공급자들을 관리하며, `DaoAuthenticationProvider`를 통해 사용자 정보를 검증한다.
+---
