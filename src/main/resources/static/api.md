@@ -728,4 +728,43 @@ ID에 해당하는 블로그 글을 삭제하는 API
    `csrf` : 메서드의 인자로 `csrf -> csrf.disable()`를 사용하여 CSRF 보호를 비활성화 한다.
     ```
 ---
+### 회원 가입 구현하기
+1. 서비스 메서드 코드 작성
+   * 사용자 정보를 담고 있는 객체 `AddUserRequest` DTO 작성
+   ```
+    @Getter
+    @Setter
+    public class AddUserRequest {
+    
+        private String email;
+        private String password;
+    }
+   ```
+   사용자로부터 입력받은 이메일과 패스워드 정보를 저장하는 DTO 클래스로 사용자의 요청이나 응답 데이터를 담는 용도로 사용되는데 해당 크래스는 유저 입장에서 서버로 데이터를 보내기 위한 목적. 
 
+   * `AddUserRequest` 객체를 인수로 받는 회원 정보 추가 메서드 작성 : `UserService` 파일 생성
+   ```
+    @RequiredArgsConstructor
+    @Service
+    public class UserService {
+    /*
+    AddUserRequest 객체를 인수로 받는 회원 서비스 클래스
+    */
+
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    // AddUserRequest 객체를 인수로 받는 회원 정보 추가 메서드
+    public Long save(AddUserRequest dto) {
+        return userRepository.save(User.builder()
+                .email(dto.getEmail())
+                // 1. 패스워드 암호화
+                .password(bCryptPasswordEncoder.encode(dto.getPassword()))
+                .build()).getId();
+    }
+    
+    }
+   ```
+   사용자 가입에 필요한 비즈니스 로직을 처리하는 서비스 클래스로 `AddUserRequest` DTO를 받아 사용자 정보를 저장하는 로직을 담당한다. DTO에서 전달받은 사용자 정보를 처리하고, 비즈니스 로직에 따라 데이터베이스에 안전하게 저장하는 역할을 한다.
+
+2. 컨트롤러 작성
