@@ -695,6 +695,37 @@ ID에 해당하는 블로그 글을 삭제하는 API
         }
    ```
 ---
-위 코드 변경 사항에 대한 설명 적기...
+위의 코드(최신 스프링 시큐리티 `authorizeHttpRequest`)에 대한 설명
+1. `.authorizeHttpRequets(..)`
+    ```
+    .authorizeHttpRequests(auth -> auth
+        .requestMatchers("/login", "/signup", "/user").permitAll()
+        .anyRequest().authenticated())
+   
+   `authorizeHttpRequests` : 최신 버전에서 권장되는 메서드로 요청에 대한 보안을 더 간결하게 설정할 수 있다.
+   `requestMatchers` : 문자열 경로를 직접 사용하여 경로를 매칭할 수 있다.
+    ```
+2. `.formLogin(...)`
+    ```
+    .formLogin(forLogin -> formLogin
+        .loginPage("/login")
+        .defaultSuccessUrl("/articles", true) 
+   
+   `defaultSuccessUrl` : 두번 째 인자(ture)는 `alwaysRedirect` 의미한다. true로 설정을 하면 항상 로그인 후에 리다이렉션 하도록 한다.
+    ```
+3. `logout(...)`
+    ```
+    .logout(logout -> logout
+        .logoutSuccessUrl("/login)
+        .invalidateHttpSession(true)
+        .clearAuthentication(true)
+   
+   `clearAuthentication(true) : 로그아웃 시 인증 정보를 명확히 지우도록 설정한다.
+    ```
+4. `.crsf(...)`
+    ```
+    .csrf(csrf -> csrf.disable())
+   `csrf` : 메서드의 인자로 `csrf -> csrf.disable()`를 사용하여 CSRF 보호를 비활성화 한다.
+    ```
 ---
-2. 어쩌고 저쩌고
+
