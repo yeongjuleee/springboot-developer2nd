@@ -784,3 +784,25 @@ ID에 해당하는 블로그 글을 삭제하는 API
     }
     }
    ```
+---
+### 회원 가입, 로그인 뷰 작성하기
+1. 뷰 컨트롤러 구현하기
+   * 로그인, 회원 가입 경로로 접근하면 뷰 파일을 연결하는 컨트롤러 생성 
+   ```
+    @Controller
+    public class UserViewController {
+
+    @GetMapping("/login")
+    public String login() {
+        return "login"; 
+    } 
+
+    @GetMapping("/signup")
+    public String signup() {
+        return "signup";
+    }
+    }
+   ```
+2. 뷰 작성하기
+   * `/login` 경로로 접근하면 `login` 페이지로 갈 애플리케이션 화면 작성
+   * `/signup` 경로로 접근하면 `signup` 페이지로 갈 애플리케이션 화면 작성
