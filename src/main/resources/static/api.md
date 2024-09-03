@@ -768,3 +768,19 @@ ID에 해당하는 블로그 글을 삭제하는 API
    사용자 가입에 필요한 비즈니스 로직을 처리하는 서비스 클래스로 `AddUserRequest` DTO를 받아 사용자 정보를 저장하는 로직을 담당한다. DTO에서 전달받은 사용자 정보를 처리하고, 비즈니스 로직에 따라 데이터베이스에 안전하게 저장하는 역할을 한다.
 
 2. 컨트롤러 작성
+   * `UserApiController` 를 생성하여 서비스 메서드를 사용하여 사용자를 저장한 뒤, 로그인 페이지로 이동하는 `signup` 메서드 작성 
+   ```
+    @RequiredArgsConstructor
+    @Controller
+    public class UserApiController {
+
+    private final UserService userService;
+    
+    // 회원 가입 요청을 받으면 서비스 메서드를 사용해 사용자를 저장한 뒤, 로그인 페이지로 이동하는 메서드
+    @PostMapping("/user")
+    public String signup(AddUserRequest request) {
+        userService.save(request); // 회원 가입 메서드 호출
+        return "redirect:/login"; // 회원 가입이 완료된 이후에 로그인 페이지로 이동
+    }
+    }
+   ```
