@@ -307,3 +307,26 @@ JPA는 메서드 규칙에 맞춰 메서드를 선언하면 이름을 분석해 
     * `DaoAuthenticationProvider` 설정 : `userDetailService`를 설정하여 사용자 정보를 제공하고, `BCryptPasswordEncoder`를 설정하여 패스워드 검증을 처리한다.
     * `ProviderManager` 반환 : `DaoAuthenticationProvider`를 통해 인증 과정을 처리하는 `ProviderManager`를 반환한다. 이 매니저는 여러 인증 공급자들을 관리하며, `DaoAuthenticationProvider`를 통해 사용자 정보를 검증한다.
 ---
+### `SecurityContextLogoutHandler`와 로그인 관련 보안 기능에 대하여
+1. 로그인 관련 보안 기능
+   * `SecurityFilterChain`
+     * 여러 보안 필터를 체인 형태로 연결하여 `HTTP` 요청을 처리하는 보안 설정을 구성한다. 각 필터는 요청을 검사하고, 인증 및 인가를 처리한다. 따라서 로그인, 로그아웃, 인증, 인가 등 다양한 보안 설정을 포함하고 있는 전체 보안 구성을 관리한다.
+   *  `UsernamePasswordAuthenticationFilter` 
+     * 로그인 폼에서 사용자 ID와 비밀번호를 제출할 때, 해당 요청을 처리하여 인증을 시도한다. 
+     * 사용자가 로그인 폼을 제출할 때, 이 필터가 요청을 가로채고 사용자의 인증을 처리한다.
+   * `AuthenticationManager`
+     * 인증 요청을 받아서 사용자의 자격 증명을 확인하고 인증을 수행한다.
+     * 로그인 요청을 처리하는 핵심 컴포넌트로 인증을 시도하여 성공 여부를 결정한다.
+   * `DaoAuthenticationProvider`
+     * 사용자 정보를 데이터베이스에서 조회하여 인증을 수행한다.
+     * 사용자 정보를 데이터베이스에서 검색하고, 비밀번호를 검증하여 인증을 처리한다.
+   * `CustomAuthenticationManager`
+     * `AuthenticationManager`의 구현체로 특정 요구 사항에 맞춘 인증 로직을 정의할 수 있다. 
+
+2. `SecurityContextLogoutHandler`
+    * 로그아웃을 처리하는 도구이다. 사용자가 로그아웃할 때, 현재 세션을 무효화하고 사용자의 인증 정보를 지우는 역할을 한다.
+    * 주요 메서드
+        * `logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication`) : 사용자가 로그아웃할 때 호출된다.
+            * `HttpServletRequest request` : 사용자의 요청 정보
+            * `HttpServletResponse response` : 서버의 응답 정보
+            * `Authenticaton authentication` : 현재 인증 정보

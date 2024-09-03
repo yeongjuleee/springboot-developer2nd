@@ -806,3 +806,18 @@ ID에 해당하는 블로그 글을 삭제하는 API
 2. 뷰 작성하기
    * `/login` 경로로 접근하면 `login` 페이지로 갈 애플리케이션 화면 작성
    * `/signup` 경로로 접근하면 `signup` 페이지로 갈 애플리케이션 화면 작성
+   
+---
+### 로그아웃 구현하기
+1. 로그아웃 메서드 추가
+   * `UserApiController` 에서 `logout()` 메서드 추가
+   ```
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+        new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
+
+        return "redirect:/login";
+    }
+   ```
+2. 로그아웃 뷰 추가 
+   * `articleList.html`에서 [로그아웃] 버튼 추가
