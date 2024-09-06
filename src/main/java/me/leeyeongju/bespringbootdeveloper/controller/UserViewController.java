@@ -1,9 +1,5 @@
 package me.leeyeongju.bespringbootdeveloper.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -21,14 +17,6 @@ public class UserViewController {
     @GetMapping("/signup")
     public String signup() {
         return "signup"; // `/signup` 경로에 접근하면 `signup()` 메서드는 `signup.html` 으로 반환
-    }
-
-    // 로그아웃 메서드 추가
-    @GetMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
-        new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-
-        return "redirect:/login";
     }
     
     /*
