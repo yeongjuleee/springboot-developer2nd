@@ -821,3 +821,6 @@ ID에 해당하는 블로그 글을 삭제하는 API
    ```
 2. 로그아웃 뷰 추가 
    * `articleList.html`에서 [로그아웃] 버튼 추가
+   ```
+    <button type="button" class="btn btn-secondary" onclick="location.href='/logout'">로그아웃</button>   
+   ```
